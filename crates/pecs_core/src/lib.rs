@@ -1,6 +1,7 @@
 //! Core [`Promise`] functionality.
+use bevy::ecs::world::Command;
 use bevy::{
-    ecs::system::{BoxedSystem, Command, StaticSystemParam, SystemParam},
+    ecs::system::{BoxedSystem, Commands, StaticSystemParam, SystemParam},
     prelude::*,
     utils::HashMap,
 };
