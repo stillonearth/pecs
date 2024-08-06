@@ -12,8 +12,13 @@ repository = "https://github.com/jkb0o/pecs"
 [workspace]
 members = ["crates/pecs_core", "crates/pecs_http", "crates/pecs_macro"]
 
+[workspace.dependencies]
+pecs_macro = { path = "crates/pecs_macro", version = "0.4.0" }
+pecs_core = { path = "crates/pecs_core", version = "0.7.0" }
+pecs_http = { path = "crates/pecs_http", version = "0.7.0" }
+
 [dependencies]
 bevy = "0.14"
-pecs_macro = { path = "crates/pecs_macro", version = "0.4.0" }
-pecs_core = { path = "crates/pecs_core", version = "0.6.0" }
-pecs_http = { path = "crates/pecs_http", version = "0.6.0" }
+pecs_macro = { workspace = true }
+pecs_core = { workspace = true }
+pecs_http = { workspace = true }

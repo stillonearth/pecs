@@ -12,4 +12,4 @@ documentation = "https://docs.rs/pecs/"
 
 [dependencies]
 bevy = "0.14"
-pecs_macro = { path = "../pecs_macro", version = "0.4.0" }
+pecs_macro = { workspace = true }
