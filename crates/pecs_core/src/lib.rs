@@ -161,6 +161,7 @@ pub struct Asyn<Input, Output: 'static, Params: PromiseParams> {
     pub marker: PhantomData<Params>,
     pub body: fn(In<Input>, StaticSystemParam<Params>) -> Output,
 }
+
 impl<Input, Otput: 'static, Params: PromiseParams> Clone for Asyn<Input, Otput, Params> {
     fn clone(&self) -> Self {
         Asyn {
@@ -203,6 +204,7 @@ impl<Input, Output: 'static, Params: PromiseParams> Asyn<Input, Output, Params> 
         self.body as *const fn(In<Input>, StaticSystemParam<Params>) -> Output
     }
 }
+
 impl<Input: 'static, Output: 'static, Params: PromiseParams> Asyn<Input, Output, Params> {
     /// Executes the `Asyn` with the given `input` and [`World`][bevy::prelude::World].
     ///
@@ -218,12 +220,13 @@ impl<Input: 'static, Output: 'static, Params: PromiseParams> Asyn<Input, Output,
         let mut write = registry.0.write().unwrap();
         let key = self.clone();
         let system = write.entry(key).or_insert_with(|| {
-            let mut sys = Box::new(IntoSystem::into_system(self.body));
+            let params = self.body;
+            let mut sys = Box::new(IntoSystem::into_system(params));
             sys.initialize(world);
             sys
         });
         let result = system.run(input, world);
-        system.apply_deferred(world);
+        // system.apply_deferred(world);
         result
     }
 }
@@ -624,7 +627,7 @@ impl<'w, 's, 'a> PromiseCommands<'w, 's, 'a, PromiseId> {
     pub fn resolve<R: 'static + Send + Sync>(&mut self, value: R) {
         let commands = mem::take(&mut self.commands).unwrap();
         let id = mem::take(&mut self.data).unwrap();
-        commands.add(PromiseCommand::<R>::resolve(id, value));
+        commands.queue(PromiseCommand::<R>::resolve(id, value));
     }
 }
 impl<'w, 's, 'a, T> Drop for PromiseCommands<'w, 's, 'a, T> {
@@ -673,7 +676,7 @@ impl<'w, 's, S: 'static, R: 'static> PromiseCommandsExtension<'w, 's, Promise<S,
         PromiseCommands {
             data: Some(arg),
             commands: Some(self),
-            finally: Some(|commands, promise| commands.add(promise)),
+            finally: Some(|commands, promise| commands.queue(promise)),
         }
     }
 }
@@ -687,7 +690,7 @@ impl<'w, 's, 'a, S: 'static, R: 'static> Drop for PromiseChain<'w, 's, 'a, S, R>
     fn drop(&mut self) {
         if let Some(commands) = mem::take(&mut self.commands) {
             if let Some(promise) = mem::take(&mut self.promise) {
-                commands.add(|world: &mut World| promise_register(world, promise))
+                commands.queue(|world: &mut World| promise_register(world, promise))
             }
         }
     }

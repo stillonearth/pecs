@@ -1,6 +1,6 @@
 [package]
 name = "pecs"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -14,11 +14,11 @@ members = ["crates/pecs_core", "crates/pecs_http", "crates/pecs_macro"]
 
 [workspace.dependencies]
 pecs_macro = { path = "crates/pecs_macro", version = "0.4.0" }
-pecs_core = { path = "crates/pecs_core", version = "0.7.0" }
-pecs_http = { path = "crates/pecs_http", version = "0.7.0" }
+pecs_core = { path = "crates/pecs_core", version = "0.8.0" }
+pecs_http = { path = "crates/pecs_http", version = "0.8.0" }
 
 [dependencies]
-bevy = "0.14"
+bevy = "0.15"
 pecs_macro = { workspace = true }
 pecs_core = { workspace = true }
 pecs_http = { workspace = true }
