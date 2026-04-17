@@ -1,13 +1,10 @@
-use bevy::app::AppExit;
-
 use super::*;
 
 pub fn exit() -> Promise<(), ()> {
     Promise::register(
-        |world, _| {
-            world.resource_mut::<Events<AppExit>>().send(AppExit::Success);
+        |_, _| {
+            std::process::exit(0);
         },
-        // can't discard AppExit
         |_, _| {},
     )
 }
