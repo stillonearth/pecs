@@ -16,16 +16,14 @@ fn main() {
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
-    let root = commands
-        .spawn((Node {
-            display: Display::Flex,
-            width: Val::Percent(100.),
-            height: Val::Percent(100.),
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::Center,
-            ..default()
-        },))
-        .id();
+    commands.spawn((Node {
+        display: Display::Flex,
+        width: Val::Percent(100.),
+        height: Val::Percent(100.),
+        justify_content: JustifyContent::Center,
+        align_items: AlignItems::Center,
+        ..default()
+    },));
 
     let exit_button = commands
         .spawn((
@@ -50,15 +48,15 @@ fn setup(mut commands: Commands) {
         .id();
 
     commands.queue(
-        Promise::from((root, exit_button)).then(asyn!(state, interaction: Query<&Interaction> => {
-            let button = state.value.1;
-            if let Ok(interaction) = interaction.get(button) {
-                if *interaction == Interaction::Pressed {
-                    info!("Exit button pressed!");
-                    asyn::app::exit();
-                }
-            }
-            state.pass()
+        Promise::new(
+            exit_button,
+            asyn!(state => {
+                asyn::ui::button(state.value).pressed()
+            }),
+        )
+        .then(asyn!(state, _ => {
+            info!("Exit button pressed!");
+            asyn::app::exit()
         })),
     );
 }
